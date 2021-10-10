@@ -24,13 +24,8 @@ class Todo(db.Model):
 def index():
     return '<h1>aiueo</h1>'
 
-@app.route("/get", methods=['GET'])
-def get():
-    todo = {'task':'料理', 'isCompleted':False}
-    return todo
-
-@app.route("/getAll", methods=['GET'])
-def getAll():
+@app.route("/readAll", methods=['GET'])
+def readAll():
     todos = db.session.query(Todo).all()
     res = {}
     for i, todo in enumerate(todos):
@@ -47,9 +42,27 @@ def add():
         todo = Todo(task=task,isCompleted=isCompleted)
         db.session.add(todo)
         db.session.commit()
-        return make_response(jsonify({'message':'succeeded!'}))
-    else:
-        return "<span>addのget</span>"
+        return make_response(jsonify({'message':'追加完了!'}))
+
+@app.route("/complete", methods=['POST'])
+def complete():
+    data = request.get_json()
+    task = data['task']
+    todo = db.session.query(Todo).filter_by(task = task).first()
+    todo.isCompleted = True
+    db.session.commit()
+    return make_response(jsonify({'message':'更新完了!'}))
+
+@app.route('/delete', methods = ['POST'])
+# @app.route('/delete', methods = ['GET'])
+def delete():
+    data = request.get_json()
+    task = data['task']
+    todo = db.session.query(Todo).filter_by(task = task).first()
+    # todos = Todo.query().all()
+    db.session.delete(todo)
+    db.session.commit()
+    return make_response(jsonify({'message':'削除完了!'}))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True) 

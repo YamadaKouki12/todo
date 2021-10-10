@@ -5,10 +5,12 @@ import axios from 'axios';
 function App() {
 
   const [input, setInput] = useState('');
-  const [todos, setTodos] = useState([{task:"掃除",isCompleted:false},{task:"洗濯",isCompleted:true}]);
+  // const [todos, setTodos] = useState([{task:"掃除",isCompleted:false},{task:"洗濯",isCompleted:true}]);
+  const [todos, setTodos] = useState([]);
 
+  //Read
   useEffect(()=>{
-    axios.get('http://127.0.0.1:5000/getAll')
+    axios.get('http://127.0.0.1:5000/readAll')
     .then((res)=>{
       const todosJson = res.data;
       const newTodos = [];
@@ -23,9 +25,10 @@ function App() {
     setInput(e.target.value);
   }
   
+  // Create
   const addTodo = () => {
     const newTask = {task:input, isCompleted:false};
-    axios.post('http://127.0.0.1:5000/add',{task:input, isCompleted:false})
+    axios.post('http://127.0.0.1:5000/add',newTask)
     .then((res)=>{
       console.log(res.data);
     })
@@ -33,8 +36,25 @@ function App() {
     setInput('');
   }
 
-  const completeTodo = () => {
+  // Update
+  const completeTodo = (task) => {
+    axios.post('http://127.0.0.1:5000/complete',{task:task})
+    .then((res) => {
+      console.log(res.data);
+    })
+    const newTodos = todos.filter((todo) => {
+      return todo.task !== task;
+    })
+    setTodos([...newTodos,{task:task,isCompleted:true}]);
+  }
 
+  // Delete
+  const deleteTodo = (task) => {
+    axios.post('http://127.0.0.1:5000/delete',{task:task})
+    // axios.get('http://127.0.0.1:5000/delete')
+    .then((res) => {
+      console.log(res.data);
+    })
   }
   
   return (
@@ -48,10 +68,10 @@ function App() {
         {todos.map((todo,index) => {
           return(
             todo.isCompleted===false &&          
-              <li key={todo.task}>
+              <li key={todo.task+index}>
                 {todo.task}
                 <button>編集</button>
-                <button onClick={()=>completeTodo(index)}>完了</button>
+                <button onClick={()=>completeTodo(todo.task)}>完了</button>
               </li>                            
           )
         })}
@@ -63,7 +83,7 @@ function App() {
             todo.isCompleted===true && 
             <li key={index}>
               {todo.task}
-              <button>削除</button>
+              <button onClick={()=>deleteTodo(todo.task)}>削除</button>
             </li>
           )          
         })}
