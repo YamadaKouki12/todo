@@ -1,12 +1,17 @@
 import React,{useState, useEffect} from 'react';
 import './App.css';
 import axios from 'axios';
+import { EditDialog } from './EditDialog';
 
 function App() {
 
   const [input, setInput] = useState('');
   // const [todos, setTodos] = useState([{task:"掃除",isCompleted:false},{task:"洗濯",isCompleted:true}]);
   const [todos, setTodos] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {setOpen(true);};
+  const handleClose = () => {setOpen(false);};
 
   //Read
   useEffect(()=>{
@@ -51,10 +56,13 @@ function App() {
   // Delete
   const deleteTodo = (task) => {
     axios.post('http://127.0.0.1:5000/delete',{task:task})
-    // axios.get('http://127.0.0.1:5000/delete')
     .then((res) => {
       console.log(res.data);
     })
+    const newTodos = todos.filter((todo) => {
+      return todo.task !== task;
+    })
+    setTodos([...newTodos]);
   }
   
   return (
@@ -70,7 +78,7 @@ function App() {
             todo.isCompleted===false &&          
               <li key={todo.task+index}>
                 {todo.task}
-                <button>編集</button>
+                <EditDialog open={open} todos={todos} setTodos={setTodos} handleOpen={handleOpen} handleClose={handleClose} oldTask={todo.task}/>
                 <button onClick={()=>completeTodo(todo.task)}>完了</button>
               </li>                            
           )

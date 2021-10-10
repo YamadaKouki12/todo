@@ -64,5 +64,15 @@ def delete():
     db.session.commit()
     return make_response(jsonify({'message':'削除完了!'}))
 
+@app.route('/update', methods = ['POST'])
+def update():
+    data = request.get_json()
+    oldTask = data['oldTask']
+    newTask = data['newTask']
+    todo = db.session.query(Todo).filter_by(task = oldTask).first()
+    todo.task=newTask
+    db.session.commit()
+    return make_response(jsonify({'message':'更新完了!'}))
+
 if __name__ == "__main__":
     app.run(debug=True) 
