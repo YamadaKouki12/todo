@@ -29,7 +29,7 @@ function App() {
   const handleInputChange = (e) => {
     setInput(e.target.value);
   }
-  
+
   // Create
   const addTodo = () => {
     const newTask = {task:input, isCompleted:false};
@@ -64,7 +64,7 @@ function App() {
     })
     setTodos([...newTodos]);
   }
-  
+
   return (
     <React.Fragment>
       <h1>TODOアプリ</h1>
@@ -75,12 +75,12 @@ function App() {
       <ul>
         {todos.map((todo,index) => {
           return(
-            todo.isCompleted===false &&          
+            todo.isCompleted===false &&
               <li key={todo.task+index}>
                 {todo.task}
                 <EditDialog open={open} todos={todos} setTodos={setTodos} handleOpen={handleOpen} handleClose={handleClose} oldTask={todo.task}/>
                 <button onClick={()=>completeTodo(todo.task)}>完了</button>
-              </li>                            
+              </li>
           )
         })}
       </ul>
@@ -88,14 +88,14 @@ function App() {
       <ul>
         {todos.map((todo,index)=> {
           return(
-            todo.isCompleted===true && 
+            todo.isCompleted===true &&
             <li key={index}>
               {todo.task}
               <button onClick={()=>deleteTodo(todo.task)}>削除</button>
             </li>
-          )          
+          )
         })}
-      </ul>    
+      </ul>
     </React.Fragment>
   );
 }
